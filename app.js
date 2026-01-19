@@ -55,7 +55,7 @@ document.getElementById("guardar").onclick = () => {
   localStorage.setItem("ordenes", JSON.stringify(data));
 
  // Número de WhatsApp P-LON
-const WHATSAPP_NUMERO = "573001234567";
+const WHATSAPP_NUMERO = "573152309386";
 
 const mensaje = `
 🔧 *Nueva orden de servicio - P-LON*
@@ -131,6 +131,7 @@ function ocultarTodo() {
   ordenes.classList.add("hidden");
   admin.classList.add("hidden");
 }
+
 
 
 
