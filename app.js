@@ -1,76 +1,80 @@
+/* =========================
+   REFERENCIAS PRINCIPALES
+========================= */
 const home = document.getElementById("home");
 const formulario = document.getElementById("formulario");
 const ordenes = document.getElementById("ordenes");
-const listaOrdenes = document.getElementById("listaOrdenes");
 const admin = document.getElementById("admin");
+const listaOrdenes = document.getElementById("listaOrdenes");
 
 /* =========================
-   BOTÓN SOLICITAR SERVICIO
+   BOTONES PRINCIPALES
 ========================= */
-document.getElementById("btnServicio").onclick = () => {
-  home.classList.add("hidden");
+document.getElementById("btnServicio").addEventListener("click", () => {
+  ocultarTodo();
   formulario.classList.remove("hidden");
-};
+});
 
-/* =========================
-   BOTÓN VER ÓRDENES
-========================= */
-document.getElementById("btnOrdenes").onclick = () => {
-  home.classList.add("hidden");
+document.getElementById("btnOrdenes").addEventListener("click", () => {
+  ocultarTodo();
   ordenes.classList.remove("hidden");
   mostrarOrdenes();
-};
+});
+
+document.getElementById("btnAdmin").addEventListener("click", () => {
+  ocultarTodo();
+  admin.classList.remove("hidden");
+  cargarAdmin();
+});
 
 /* =========================
-   VOLVER AL INICIO
+   VOLVER
 ========================= */
 function volver() {
-  formulario.classList.add("hidden");
-  ordenes.classList.add("hidden");
-  admin.classList.add("hidden");
+  ocultarTodo();
   home.classList.remove("hidden");
 }
 
 /* =========================
    GUARDAR ORDEN
 ========================= */
-document.getElementById("guardar").onclick = () => {
-  if (
-    nombre.value === "" ||
-    telefono.value === "" ||
-    direccion.value === "" ||
-    tipo.value === "" ||
-    descripcion.value === ""
-  ) {
+document.getElementById("guardar").addEventListener("click", () => {
+  const nombre = document.getElementById("nombre").value;
+  const telefono = document.getElementById("telefono").value;
+  const direccion = document.getElementById("direccion").value;
+  const tipo = document.getElementById("tipo").value;
+  const descripcion = document.getElementById("descripcion").value;
+
+  if (!nombre || !telefono || !direccion || !tipo || !descripcion) {
     alert("Por favor completa todos los campos");
     return;
   }
 
   const orden = {
     id: Date.now(),
-    nombre: nombre.value,
-    telefono: telefono.value,
-    direccion: direccion.value,
-    tipo: tipo.value,
-    descripcion: descripcion.value,
+    nombre,
+    telefono,
+    direccion,
+    tipo,
+    descripcion,
     estado: "Pendiente"
   };
 
-  let data = JSON.parse(localStorage.getItem("ordenes")) || [];
+  const data = JSON.parse(localStorage.getItem("ordenes")) || [];
   data.push(orden);
   localStorage.setItem("ordenes", JSON.stringify(data));
 
   alert("Orden creada con éxito");
-  formulario.reset();
+  document.getElementById("formularioForm").reset();
   volver();
-};
+});
 
 /* =========================
    MOSTRAR ÓRDENES CLIENTE
 ========================= */
 function mostrarOrdenes() {
   listaOrdenes.innerHTML = "";
-  let data = JSON.parse(localStorage.getItem("ordenes")) || [];
+  const data = JSON.parse(localStorage.getItem("ordenes")) || [];
 
   if (data.length === 0) {
     listaOrdenes.innerHTML = "<p>No hay órdenes registradas</p>";
@@ -101,18 +105,12 @@ function cancelar(id) {
 }
 
 /* =========================
-   PANEL ADMIN (LO DEJAMOS)
+   PANEL ADMIN
 ========================= */
-document.getElementById("btnAdmin").onclick = () => {
-  home.classList.add("hidden");
-  admin.classList.remove("hidden");
-  cargarAdmin();
-};
-
 function cargarAdmin() {
   const adminOrdenes = document.getElementById("adminOrdenes");
   adminOrdenes.innerHTML = "";
-  let data = JSON.parse(localStorage.getItem("ordenes")) || [];
+  const data = JSON.parse(localStorage.getItem("ordenes")) || [];
 
   data.forEach(o => {
     const div = document.createElement("div");
@@ -122,23 +120,29 @@ function cargarAdmin() {
       <strong>Cliente:</strong> ${o.nombre}<br>
       <strong>Servicio:</strong> ${o.tipo}<br>
       <strong>Estado:</strong> ${o.estado}<br>
-      <button onclick="estado(${o.id}, 'Confirmada')">Confirmar</button>
-      <button onclick="estado(${o.id}, 'Finalizada')">Finalizar</button>
+      <button onclick="cambiarEstado(${o.id}, 'Confirmada')">Confirmar</button>
+      <button onclick="cambiarEstado(${o.id}, 'Finalizada')">Finalizar</button>
     `;
     adminOrdenes.appendChild(div);
   });
 }
 
-function estado(id, nuevo) {
+function cambiarEstado(id, nuevoEstado) {
   let data = JSON.parse(localStorage.getItem("ordenes")) || [];
   data = data.map(o => {
-    if (o.id === id) {
-      o.estado = nuevo;
-    }
+    if (o.id === id) o.estado = nuevoEstado;
     return o;
   });
   localStorage.setItem("ordenes", JSON.stringify(data));
   cargarAdmin();
 }
 
-
+/* =========================
+   UTILIDAD
+========================= */
+function ocultarTodo() {
+  home.classList.add("hidden");
+  formulario.classList.add("hidden");
+  ordenes.classList.add("hidden");
+  admin.classList.add("hidden");
+}
