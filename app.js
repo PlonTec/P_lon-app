@@ -2,25 +2,50 @@ const home = document.getElementById("home");
 const formulario = document.getElementById("formulario");
 const ordenes = document.getElementById("ordenes");
 const listaOrdenes = document.getElementById("listaOrdenes");
+const admin = document.getElementById("admin");
 
+/* =========================
+   BOTÓN SOLICITAR SERVICIO
+========================= */
 document.getElementById("btnServicio").onclick = () => {
   home.classList.add("hidden");
   formulario.classList.remove("hidden");
 };
 
+/* =========================
+   BOTÓN VER ÓRDENES
+========================= */
 document.getElementById("btnOrdenes").onclick = () => {
   home.classList.add("hidden");
   ordenes.classList.remove("hidden");
   mostrarOrdenes();
 };
 
+/* =========================
+   VOLVER AL INICIO
+========================= */
 function volver() {
   formulario.classList.add("hidden");
   ordenes.classList.add("hidden");
+  admin.classList.add("hidden");
   home.classList.remove("hidden");
 }
 
+/* =========================
+   GUARDAR ORDEN
+========================= */
 document.getElementById("guardar").onclick = () => {
+  if (
+    nombre.value === "" ||
+    telefono.value === "" ||
+    direccion.value === "" ||
+    tipo.value === "" ||
+    descripcion.value === ""
+  ) {
+    alert("Por favor completa todos los campos");
+    return;
+  }
+
   const orden = {
     id: Date.now(),
     nombre: nombre.value,
@@ -40,9 +65,17 @@ document.getElementById("guardar").onclick = () => {
   volver();
 };
 
+/* =========================
+   MOSTRAR ÓRDENES CLIENTE
+========================= */
 function mostrarOrdenes() {
   listaOrdenes.innerHTML = "";
   let data = JSON.parse(localStorage.getItem("ordenes")) || [];
+
+  if (data.length === 0) {
+    listaOrdenes.innerHTML = "<p>No hay órdenes registradas</p>";
+    return;
+  }
 
   data.forEach(o => {
     const div = document.createElement("div");
@@ -57,12 +90,19 @@ function mostrarOrdenes() {
   });
 }
 
+/* =========================
+   CANCELAR ORDEN
+========================= */
 function cancelar(id) {
-  let data = JSON.parse(localStorage.getItem("ordenes"));
+  let data = JSON.parse(localStorage.getItem("ordenes")) || [];
   data = data.filter(o => o.id !== id);
   localStorage.setItem("ordenes", JSON.stringify(data));
   mostrarOrdenes();
 }
+
+/* =========================
+   PANEL ADMIN (LO DEJAMOS)
+========================= */
 document.getElementById("btnAdmin").onclick = () => {
   home.classList.add("hidden");
   admin.classList.remove("hidden");
@@ -90,21 +130,13 @@ function cargarAdmin() {
 }
 
 function estado(id, nuevo) {
-  let data = JSON.parse(localStorage.getItem("ordenes"));
+  let data = JSON.parse(localStorage.getItem("ordenes")) || [];
   data = data.map(o => {
     if (o.id === id) {
       o.estado = nuevo;
-      if (nuevo === "Finalizada") {
-        o.puntos = (o.puntos || 0) + 10;
-      }
     }
     return o;
   });
   localStorage.setItem("ordenes", JSON.stringify(data));
   cargarAdmin();
 }
-
-}
-
-
-
