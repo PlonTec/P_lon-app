@@ -5,19 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>P-LON Technical Services</title>
   <link rel="stylesheet" href="style.css">
-<link rel="manifest" href="manifest.json">
+  <link rel="manifest" href="manifest.json">
 </head>
+
 <body>
 
-  <header>
-   <img src="logo.png" alt="P-LON Logo" width="160">
-    <h1>P-LON Technical Services</h1>
-    <p>Donde otros se enredan, P-LON resuelve</p>
-  </header>
+<header>
+  <img src="logo.png" alt="P-LON Logo" width="160">
+  <h1>P-LON Technical Services</h1>
+  <p>Donde otros se enredan, P-LON resuelve</p>
+</header>
 
-  <main id="home">
-  <button onclick="solicitarServicio()">Generar orden</button>
-  <button onclick="btnOrdenes">Mis órdenes</button>
+<main id="home">
+  <button id="btnServicio">Generar orden</button>
+  <button id="btnOrdenes">Mis órdenes</button>
 </main>
 
 <section id="formulario" class="hidden">
@@ -45,16 +46,14 @@
   <button onclick="volver()">Volver</button>
 </section>
 
-  <script src="app.js"></script>
-</body>
-</html>
 <section id="admin" class="hidden">
   <h2>Panel P-LON</h2>
   <div id="adminOrdenes"></div>
   <button onclick="volver()">Volver</button>
 </section>
-<button id="btnAdmin" style="display:block;">Panel Admin</button>
 
+<button id="btnAdmin">Panel Admin</button>
 
-
-
+<script src="app.js"></script>
+</body>
+</html>
