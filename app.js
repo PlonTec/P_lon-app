@@ -103,3 +103,49 @@ function estado(id, nuevo) {
   localStorage.setItem("ordenes", JSON.stringify(data));
   cargarAdmin();
 }
+const PIN_ADMIN = "1234"; // luego lo cambiamos
+
+function abrirAdmin() {
+  document.getElementById("adminPanel").style.display = "block";
+}
+
+function cerrarAdmin() {
+  document.getElementById("adminPanel").style.display = "none";
+  document.getElementById("adminPin").value = "";
+}
+
+function validarPin() {
+  const pin = document.getElementById("adminPin").value;
+
+  if (pin === PIN_ADMIN) {
+    document.getElementById("loginAdmin").style.display = "none";
+    document.getElementById("contenidoAdmin").style.display = "block";
+    cargarOrdenes();
+  } else {
+    alert("❌ PIN incorrecto");
+  }
+}
+
+function cargarOrdenes() {
+  const contenedor = document.getElementById("listaOrdenes");
+  contenedor.innerHTML = "";
+
+  const ordenes = JSON.parse(localStorage.getItem("ordenes")) || [];
+
+  if (ordenes.length === 0) {
+    contenedor.innerHTML = "<p>No hay órdenes registradas.</p>";
+    return;
+  }
+
+  ordenes.forEach((orden, index) => {
+    contenedor.innerHTML += `
+      <div style="border:1px solid #ccc; padding:10px; margin-bottom:10px;">
+        <strong>${orden.cliente}</strong><br>
+        Servicio: ${orden.servicio}<br>
+        Teléfono: ${orden.telefono}<br>
+        Estado: ${orden.estado}<br>
+      </div>
+    `;
+  });
+}
+
