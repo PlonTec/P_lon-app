@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>P-LON Technical Services</title>
+  <link rel="stylesheet" href="style.css">
+<link rel="manifest" href="manifest.json">
+</head>
+<body>
+
+  <header>
+    <img src="logo.png" alt="P-LON Logo" class="logo">
+    <h1>P-LON Technical Services</h1>
+    <p>Donde otros se enredan, P-LON resuelve</p>
+  </header>
+
+  <main id="home">
+  <button id="btnServicio">Solicitar servicio</button>
+  <button id="btnOrdenes">Mis �rdenes</button>
+</main>
+
+<section id="formulario" class="hidden">
+  <h2>Solicitar servicio</h2>
+
+  <input type="text" id="nombre" placeholder="Nombre completo">
+  <input type="tel" id="telefono" placeholder="Tel�fono">
+  <input type="text" id="direccion" placeholder="Direcci�n">
+
+  <select id="tipo">
+    <option value="">Tipo de servicio</option>
+    <option value="Lavadora">Lavadora</option>
+    <option value="Plomer�a">Plomer�a</option>
+  </select>
+
+  <textarea id="descripcion" placeholder="Describe el problema"></textarea>
+
+  <button id="guardar">Crear orden</button>
+  <button onclick="volver()">Volver</button>
+</section>
+
+<section id="ordenes" class="hidden">
+  <h2>Mis �rdenes</h2>
+  <div id="listaOrdenes"></div>
+  <button onclick="volver()">Volver</button>
+</section>
+
+  <script src="app.js"></script>
+</body>
+</html>
+<section id="admin" class="hidden">
+  <h2>Panel P-LON</h2>
+  <div id="adminOrdenes"></div>
+  <button onclick="volver()">Volver</button>
+</section>
+<button id="btnAdmin" style="display:block;">Panel Admin</button>
+{
+  "name": "P-LON Technical Services",
+  "short_name": "P-LON",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#0a3d62",
+  "theme_color": "#0a3d62",
+  "icons": [
+    {
+      "src": "logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}
+
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  background-color: #f4f6f8;
+  text-align: center;
+}
+
+header {
+  background-color: #0a3d62;
+  color: white;
+  padding: 20px;
+}
+
+.logo {
+  width: 80px;
+  margin-bottom: 10px;
+}
+
+main {
+  padding: 30px 20px;
+}
+
+button {
+  width: 100%;
+  padding: 15px;
+  margin: 10px 0;
+  font-size: 18px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+#btnServicio {
+  background-color: #fbc531;
+}
+
+#btnOrdenes {
+  background-color: #dcdde1;
+}
+.hidden {
+  display: none;
+}
+
+input, select, textarea {
+  width: 100%;
+  padding: 12px;
+  margin: 8px 0;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+textarea {
+  height: 80px;
+}
+
+.orden {
+  background: white;
+  padding: 15px;
+  margin: 10px 0;
+  border-radius: 8px;
+  text-align: left;
+}
+.admin {
+  background: #eaf0f6;
+  border-left: 5px solid #0a3d62;
+}
+
+const home = document.getElementById("home");
+const formulario = document.getElementById("formulario");
+const ordenes = document.getElementById("ordenes");
+const listaOrdenes = document.getElementById("listaOrdenes");
+
+document.getElementById("btnServicio").onclick = () => {
+  home.classList.add("hidden");
+  formulario.classList.remove("hidden");
+};
+
+document.getElementById("btnOrdenes").onclick = () => {
+  home.classList.add("hidden");
+  ordenes.classList.remove("hidden");
+  mostrarOrdenes();
+};
+
+function volver() {
+  formulario.classList.add("hidden");
+  ordenes.classList.add("hidden");
+  home.classList.remove("hidden");
+}
+
+document.getElementById("guardar").onclick = () => {
+  const orden = {
+    id: Date.now(),
+    nombre: nombre.value,
+    telefono: telefono.value,
+    direccion: direccion.value,
+    tipo: tipo.value,
+    descripcion: descripcion.value,
+    estado: "Pendiente"
+  };
+
+  let data = JSON.parse(localStorage.getItem("ordenes")) || [];
+  data.push(orden);
+  localStorage.setItem("ordenes", JSON.stringify(data));
+
+  alert("Orden creada con éxito");
+  formulario.reset();
+  volver();
+};
+
+function mostrarOrdenes() {
+  listaOrdenes.innerHTML = "";
+  let data = JSON.parse(localStorage.getItem("ordenes")) || [];
+
+  data.forEach(o => {
+    const div = document.createElement("div");
+    div.className = "orden";
+    div.innerHTML = `
+      <strong>Orden:</strong> ${o.id}<br>
+      <strong>Servicio:</strong> ${o.tipo}<br>
+      <strong>Estado:</strong> ${o.estado}<br>
+      <button onclick="cancelar(${o.id})">Cancelar</button>
+    `;
+    listaOrdenes.appendChild(div);
+  });
+}
+
+function cancelar(id) {
+  let data = JSON.parse(localStorage.getItem("ordenes"));
+  data = data.filter(o => o.id !== id);
+  localStorage.setItem("ordenes", JSON.stringify(data));
+  mostrarOrdenes();
+}
+document.getElementById("btnAdmin").onclick = () => {
+  home.classList.add("hidden");
+  admin.classList.remove("hidden");
+  cargarAdmin();
+};
+
+function cargarAdmin() {
+  const adminOrdenes = document.getElementById("adminOrdenes");
+  adminOrdenes.innerHTML = "";
+  let data = JSON.parse(localStorage.getItem("ordenes")) || [];
+
+  data.forEach(o => {
+    const div = document.createElement("div");
+    div.className = "orden admin";
+    div.innerHTML = `
+      <strong>Orden:</strong> ${o.id}<br>
+      <strong>Cliente:</strong> ${o.nombre}<br>
+      <strong>Servicio:</strong> ${o.tipo}<br>
+      <strong>Estado:</strong> ${o.estado}<br>
+      <button onclick="estado(${o.id}, 'Confirmada')">Confirmar</button>
+      <button onclick="estado(${o.id}, 'Finalizada')">Finalizar</button>
+    `;
+    adminOrdenes.appendChild(div);
+  });
+}
+
+function estado(id, nuevo) {
+  let data = JSON.parse(localStorage.getItem("ordenes"));
+  data = data.map(o => {
+    if (o.id === id) {
+      o.estado = nuevo;
+      if (nuevo === "Finalizada") {
+        o.puntos = (o.puntos || 0) + 10;
+      }
+    }
+    return o;
+  });
+  localStorage.setItem("ordenes", JSON.stringify(data));
+  cargarAdmin();
+}
