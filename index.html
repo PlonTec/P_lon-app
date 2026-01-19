@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>P-LON Technical Services</title>
+  <link rel="stylesheet" href="style.css">
+<link rel="manifest" href="manifest.json">
+</head>
+<body>
+
+  <header>
+    <img src="logo.png" alt="P-LON Logo" class="logo">
+    <h1>P-LON Technical Services</h1>
+    <p>Donde otros se enredan, P-LON resuelve</p>
+  </header>
+
+  <main id="home">
+  <button id="btnServicio">Solicitar servicio</button>
+  <button id="btnOrdenes">Mis órdenes</button>
+</main>
+
+<section id="formulario" class="hidden">
+  <h2>Solicitar servicio</h2>
+
+  <input type="text" id="nombre" placeholder="Nombre completo">
+  <input type="tel" id="telefono" placeholder="Teléfono">
+  <input type="text" id="direccion" placeholder="Dirección">
+
+  <select id="tipo">
+    <option value="">Tipo de servicio</option>
+    <option value="Lavadora">Lavadora</option>
+    <option value="Plomería">Plomería</option>
+  </select>
+
+  <textarea id="descripcion" placeholder="Describe el problema"></textarea>
+
+  <button id="guardar">Crear orden</button>
+  <button onclick="volver()">Volver</button>
+</section>
+
+<section id="ordenes" class="hidden">
+  <h2>Mis órdenes</h2>
+  <div id="listaOrdenes"></div>
+  <button onclick="volver()">Volver</button>
+</section>
+
+  <script src="app.js"></script>
+</body>
+</html>
+<section id="admin" class="hidden">
+  <h2>Panel P-LON</h2>
+  <div id="adminOrdenes"></div>
+  <button onclick="volver()">Volver</button>
+</section>
+<button id="btnAdmin" style="display:block;">Panel Admin</button>
