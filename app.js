@@ -1,44 +1,34 @@
-/* =========================
-   REFERENCIAS PRINCIPALES
-========================= */
 const home = document.getElementById("home");
 const formulario = document.getElementById("formulario");
 const ordenes = document.getElementById("ordenes");
 const admin = document.getElementById("admin");
 const listaOrdenes = document.getElementById("listaOrdenes");
 
-/* =========================
-   BOTONES PRINCIPALES
-========================= */
-document.getElementById("btnServicio").addEventListener("click", () => {
+/* ========= NAVEGACIÓN ========= */
+document.getElementById("btnServicio").onclick = () => {
   ocultarTodo();
   formulario.classList.remove("hidden");
-});
+};
 
-document.getElementById("btnOrdenes").addEventListener("click", () => {
+document.getElementById("btnOrdenes").onclick = () => {
   ocultarTodo();
   ordenes.classList.remove("hidden");
   mostrarOrdenes();
-});
+};
 
-document.getElementById("btnAdmin").addEventListener("click", () => {
+document.getElementById("btnAdmin").onclick = () => {
   ocultarTodo();
   admin.classList.remove("hidden");
   cargarAdmin();
-});
+};
 
-/* =========================
-   VOLVER
-========================= */
 function volver() {
   ocultarTodo();
   home.classList.remove("hidden");
 }
 
-/* =========================
-   GUARDAR ORDEN
-========================= */
-document.getElementById("guardar").addEventListener("click", () => {
+/* ========= GUARDAR ORDEN ========= */
+document.getElementById("guardar").onclick = () => {
   const nombre = document.getElementById("nombre").value;
   const telefono = document.getElementById("telefono").value;
   const direccion = document.getElementById("direccion").value;
@@ -46,7 +36,7 @@ document.getElementById("guardar").addEventListener("click", () => {
   const descripcion = document.getElementById("descripcion").value;
 
   if (!nombre || !telefono || !direccion || !tipo || !descripcion) {
-    alert("Por favor completa todos los campos");
+    alert("Completa todos los campos");
     return;
   }
 
@@ -65,13 +55,10 @@ document.getElementById("guardar").addEventListener("click", () => {
   localStorage.setItem("ordenes", JSON.stringify(data));
 
   alert("Orden creada con éxito");
-  document.getElementById("formularioForm").reset();
   volver();
-});
+};
 
-/* =========================
-   MOSTRAR ÓRDENES CLIENTE
-========================= */
+/* ========= MOSTRAR ÓRDENES ========= */
 function mostrarOrdenes() {
   listaOrdenes.innerHTML = "";
   const data = JSON.parse(localStorage.getItem("ordenes")) || [];
@@ -94,9 +81,6 @@ function mostrarOrdenes() {
   });
 }
 
-/* =========================
-   CANCELAR ORDEN
-========================= */
 function cancelar(id) {
   let data = JSON.parse(localStorage.getItem("ordenes")) || [];
   data = data.filter(o => o.id !== id);
@@ -104,9 +88,7 @@ function cancelar(id) {
   mostrarOrdenes();
 }
 
-/* =========================
-   PANEL ADMIN
-========================= */
+/* ========= ADMIN ========= */
 function cargarAdmin() {
   const adminOrdenes = document.getElementById("adminOrdenes");
   adminOrdenes.innerHTML = "";
@@ -119,30 +101,17 @@ function cargarAdmin() {
       <strong>Orden:</strong> ${o.id}<br>
       <strong>Cliente:</strong> ${o.nombre}<br>
       <strong>Servicio:</strong> ${o.tipo}<br>
-      <strong>Estado:</strong> ${o.estado}<br>
-      <button onclick="cambiarEstado(${o.id}, 'Confirmada')">Confirmar</button>
-      <button onclick="cambiarEstado(${o.id}, 'Finalizada')">Finalizar</button>
+      <strong>Estado:</strong> ${o.estado}
     `;
     adminOrdenes.appendChild(div);
   });
 }
 
-function cambiarEstado(id, nuevoEstado) {
-  let data = JSON.parse(localStorage.getItem("ordenes")) || [];
-  data = data.map(o => {
-    if (o.id === id) o.estado = nuevoEstado;
-    return o;
-  });
-  localStorage.setItem("ordenes", JSON.stringify(data));
-  cargarAdmin();
-}
-
-/* =========================
-   UTILIDAD
-========================= */
 function ocultarTodo() {
   home.classList.add("hidden");
   formulario.classList.add("hidden");
   ordenes.classList.add("hidden");
   admin.classList.add("hidden");
 }
+
+
