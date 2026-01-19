@@ -11,11 +11,6 @@ header {
   padding: 20px;
 }
 
-.logo {
-  width: 80px;
-  margin-bottom: 10px;
-}
-
 main {
   padding: 30px 20px;
 }
@@ -37,6 +32,7 @@ button {
 #btnOrdenes {
   background-color: #dcdde1;
 }
+
 .hidden {
   display: none;
 }
@@ -60,9 +56,9 @@ textarea {
   border-radius: 8px;
   text-align: left;
 }
+
 .admin {
   background: #eaf0f6;
   border-left: 5px solid #0a3d62;
 }
-
 
