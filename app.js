@@ -54,8 +54,26 @@ document.getElementById("guardar").onclick = () => {
   data.push(orden);
   localStorage.setItem("ordenes", JSON.stringify(data));
 
-  alert("Orden creada con éxito");
-  volver();
+ // Número de WhatsApp P-LON
+const WHATSAPP_NUMERO = "573001234567";
+
+const mensaje = `
+🔧 *Nueva orden de servicio - P-LON*
+
+👤 Cliente: ${nombre}
+📞 Teléfono: ${telefono}
+📍 Dirección: ${direccion}
+🛠 Servicio: ${tipo}
+📝 Descripción: ${descripcion}
+`;
+
+const urlWhatsApp = `https://wa.me/${WHATSAPP_NUMERO}?text=${encodeURIComponent(mensaje)}`;
+
+// Abrir WhatsApp
+window.open(urlWhatsApp, "_blank");
+
+volver();
+
 };
 
 /* ========= MOSTRAR ÓRDENES ========= */
@@ -113,5 +131,6 @@ function ocultarTodo() {
   ordenes.classList.add("hidden");
   admin.classList.add("hidden");
 }
+
 
 
