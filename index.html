@@ -1,68 +1,57 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>P-LON Technical Services</title>
-  <link rel="stylesheet" href="estilos.css">
+  <link rel="stylesheet" href="style.css">
+<link rel="manifest" href="manifest.json">
 </head>
 <body>
 
-  <!-- ENCABEZADO -->
-  <header style="text-align:center; padding:20px;">
-    <img src="logo.png" alt="P-LON Logo" style="max-width:150px;">
+  <header>
+    <img src="logo.png" alt="P-LON Logo" class="logo">
     <h1>P-LON Technical Services</h1>
     <p>Donde otros se enredan, P-LON resuelve</p>
   </header>
 
-  <!-- FORMULARIO CLIENTE -->
-  <section id="cliente">
-    <h2>📋 Solicitar servicio</h2>
+  <main id="home">
+  <button id="btnServicio">Solicitar servicio</button>
+  <button id="btnOrdenes">Mis órdenes</button>
+</main>
 
-    <input type="text" id="clienteNombre" placeholder="Nombre del cliente">
-    <input type="text" id="clienteTelefono" placeholder="Teléfono">
-    <select id="servicio">
-      <option value="">Seleccione un servicio</option>
-      <option value="Lavadoras">Reparación de lavadoras</option>
-      <option value="Plomería">Plomería</option>
-      <option value="Mantenimiento">Mantenimiento general</option>
-    </select>
+<section id="formulario" class="hidden">
+  <h2>Solicitar servicio</h2>
 
-    <button onclick="crearOrden()">Generar orden</button>
-  </section>
+  <input type="text" id="nombre" placeholder="Nombre completo">
+  <input type="tel" id="telefono" placeholder="Teléfono">
+  <input type="text" id="direccion" placeholder="Dirección">
 
-  <!-- MENSAJE CONFIRMACIÓN -->
-  <section id="confirmacion" style="display:none;">
-    <h2>✅ Orden creada</h2>
-    <p>Su solicitud fue registrada correctamente.</p>
-    <button onclick="volver()">Volver</button>
-    <button onclick="cancelarOrden()">Cancelar orden</button>
-  </section>
+  <select id="tipo">
+    <option value="">Tipo de servicio</option>
+    <option value="Lavadora">Lavadora</option>
+    <option value="Plomería">Plomería</option>
+  </select>
 
-  <!-- BOTÓN PANEL ADMIN -->
-  <section style="text-align:center; margin-top:20px;">
-    <button onclick="abrirAdmin()">🔐 Panel Admin</button>
-  </section>
+  <textarea id="descripcion" placeholder="Describe el problema"></textarea>
 
-  <!-- PANEL ADMIN -->
-  <section id="adminPanel" style="display:none; padding:20px;">
-    <h2>🔐 Panel Administrativo</h2>
+  <button id="guardar">Crear orden</button>
+  <button onclick="volver()">Volver</button>
+</section>
 
-    <!-- LOGIN -->
-    <div id="loginAdmin">
-      <p>Ingrese PIN de acceso</p>
-      <input type="password" id="adminPin" placeholder="PIN">
-      <button onclick="validarPin()">Ingresar</button>
-    </div>
+<section id="ordenes" class="hidden">
+  <h2>Mis órdenes</h2>
+  <div id="listaOrdenes"></div>
+  <button onclick="volver()">Volver</button>
+</section>
 
-    <!-- CONTENIDO ADMIN -->
-    <div id="contenidoAdmin" style="display:none;">
-      <h3>📂 Órdenes registradas</h3>
-      <div id="listaOrdenes"></div>
-      <button onclick="cerrarAdmin()">Cerrar panel</button>
-    </div>
-  </section>
-
-  <script src="script.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
+<section id="admin" class="hidden">
+  <h2>Panel P-LON</h2>
+  <div id="adminOrdenes"></div>
+  <button onclick="volver()">Volver</button>
+</section>
+<button id="btnAdmin" style="display:block;">Panel Admin</button>
+
