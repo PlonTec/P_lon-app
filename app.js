@@ -7,12 +7,16 @@ document.addEventListener("DOMContentLoaded", () => {
   const home = document.getElementById("home");
 
   btnAdmin.addEventListener("click", () => {
-    alert("Botón Admin detectado"); // PRUEBA CLAVE
 
-    const pin = prompt("Ingrese el PIN del técnico");
+    const pin = window.prompt("Ingrese el PIN del técnico:");
+
+    if (!pin) {
+      alert("Acceso cancelado");
+      return;
+    }
 
     if (pin !== ADMIN_PIN) {
-      alert("Acceso denegado");
+      alert("PIN incorrecto");
       return;
     }
 
@@ -21,9 +25,4 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
 });
-
-
-
-
-
 
