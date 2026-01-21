@@ -1,153 +1,151 @@
-const ADMIN_PIN = "1234";
-const home = document.getElementById("home");
-const formulario = document.getElementById("formulario");
-const ordenes = document.getElementById("ordenes");
-const admin = document.getElementById("admin");
-const listaOrdenes = document.getElementById("listaOrdenes");
+document.addEventListener("DOMContentLoaded", () => {
 
-/* ========= NAVEGACIÓN ========= */
-document.getElementById("btnServicio").onclick = () => {
-  ocultarTodo();
-  formulario.classList.remove("hidden");
-};
+  // ===== CONFIGURACIÓN =====
+  const ADMIN_PIN = "1234";
 
-document.getElementById("btnOrdenes").onclick = () => {
-  ocultarTodo();
-  ordenes.classList.remove("hidden");
-  mostrarOrdenes();
-};
+  // ===== REFERENCIAS =====
+  const home = document.getElementById("home");
+  const formulario = document.getElementById("formulario");
+  const ordenes = document.getElementById("ordenes");
+  const admin = document.getElementById("admin");
+  const listaOrdenes = document.getElementById("listaOrdenes");
 
-document.getElementById("btnAdmin").onclick = () => {
-  const pin = prompt("Ingrese el PIN del técnico");
+  const btnServicio = document.getElementById("btnServicio");
+  const btnOrdenes = document.getElementById("btnOrdenes");
+  const btnAdmin = document.getElementById("btnAdmin");
+  const btnGuardar = document.getElementById("guardar");
 
-  if (pin !== ADMIN_PIN) {
-    alert("Acceso denegado");
-    return;
+  // ===== UTILIDAD =====
+  function ocultarTodo() {
+    home.classList.add("hidden");
+    formulario.classList.add("hidden");
+    ordenes.classList.add("hidden");
+    admin.classList.add("hidden");
   }
 
-  ocultarTodo();
-  admin.classList.remove("hidden");
-  cargarAdmin();
-};
-
-
-function volver() {
-  ocultarTodo();
-  home.classList.remove("hidden");
-}
-
-/* ========= GUARDAR ORDEN ========= */
-document.getElementById("guardar").onclick = () => {
-  const nombre = document.getElementById("nombre").value;
-  const telefono = document.getElementById("telefono").value;
-  const direccion = document.getElementById("direccion").value;
-  const tipo = document.getElementById("tipo").value;
-  const descripcion = document.getElementById("descripcion").value;
-
-  if (!nombre || !telefono || !direccion || !tipo || !descripcion) {
-    alert("Completa todos los campos");
-    return;
+  function volver() {
+    ocultarTodo();
+    home.classList.remove("hidden");
   }
 
-  const orden = {
-    id: Date.now(),
-    nombre,
-    telefono,
-    direccion,
-    tipo,
-    descripcion,
-    estado: "Pendiente"
+  // Exponer volver al HTML
+  window.volver = volver;
+
+  // ===== NAVEGACIÓN =====
+  btnServicio.onclick = () => {
+    ocultarTodo();
+    formulario.classList.remove("hidden");
   };
 
-  const data = JSON.parse(localStorage.getItem("ordenes")) || [];
-  data.push(orden);
-  localStorage.setItem("ordenes", JSON.stringify(data));
+  btnOrdenes.onclick = () => {
+    ocultarTodo();
+    ordenes.classList.remove("hidden");
+    mostrarOrdenes();
+  };
 
- // Número de WhatsApp P-LON
-const WHATSAPP_NUMERO = "573152309386";
+  // ===== PANEL ADMIN CON PIN =====
+  btnAdmin.onclick = () => {
+    const pin = prompt("Ingrese el PIN del técnico");
 
-const mensaje = `
-🔧 *Nueva orden de servicio - P-LON*
+    if (pin !== ADMIN_PIN) {
+      alert("Acceso denegado");
+      return;
+    }
 
-👤 Cliente: ${nombre}
-📞 Teléfono: ${telefono}
-📍 Dirección: ${direccion}
-🛠 Servicio: ${tipo}
-📝 Descripción: ${descripcion}
-`;
+    ocultarTodo();
+    admin.classList.remove("hidden");
+    cargarAdmin();
+  };
 
-const urlWhatsApp = `https://wa.me/${WHATSAPP_NUMERO}?text=${encodeURIComponent(mensaje)}`;
+  // ===== GUARDAR ORDEN =====
+  btnGuardar.onclick = () => {
+    const nombre = document.getElementById("nombre").value;
+    const telefono = document.getElementById("telefono").value;
+    const direccion = document.getElementById("direccion").value;
+    const tipo = document.getElementById("tipo").value;
+    const descripcion = document.getElementById("descripcion").value;
 
-// Abrir WhatsApp
-window.open(urlWhatsApp, "_blank");
+    if (!nombre || !telefono || !direccion || !tipo || !descripcion) {
+      alert("Completa todos los campos");
+      return;
+    }
 
-volver();
+    const orden = {
+      id: Date.now(),
+      nombre,
+      telefono,
+      direccion,
+      tipo,
+      descripcion,
+      estado: "Pendiente"
+    };
 
-};
+    const data = JSON.parse(localStorage.getItem("ordenes")) || [];
+    data.push(orden);
+    localStorage.setItem("ordenes", JSON.stringify(data));
 
-/* ========= MOSTRAR ÓRDENES ========= */
-function mostrarOrdenes() {
-  listaOrdenes.innerHTML = "";
-  const data = JSON.parse(localStorage.getItem("ordenes")) || [];
+    alert("Orden creada con éxito");
+    volver();
+  };
 
-  if (data.length === 0) {
-    listaOrdenes.innerHTML = "<p>No hay órdenes registradas</p>";
-    return;
+  // ===== MOSTRAR ÓRDENES CLIENTE =====
+  function mostrarOrdenes() {
+    listaOrdenes.innerHTML = "";
+    const data = JSON.parse(localStorage.getItem("ordenes")) || [];
+
+    if (data.length === 0) {
+      listaOrdenes.innerHTML = "<p>No hay órdenes registradas</p>";
+      return;
+    }
+
+    data.forEach(o => {
+      const div = document.createElement("div");
+      div.className = "orden";
+      div.innerHTML = `
+        <strong>Orden:</strong> ${o.id}<br>
+        <strong>Servicio:</strong> ${o.tipo}<br>
+        <strong>Estado:</strong> ${o.estado}<br>
+        <button onclick="cancelar(${o.id})">Cancelar</button>
+      `;
+      listaOrdenes.appendChild(div);
+    });
   }
 
-  data.forEach(o => {
-    const div = document.createElement("div");
-    div.className = "orden";
-    div.innerHTML = `
-      <strong>Orden:</strong> ${o.id}<br>
-      <strong>Servicio:</strong> ${o.tipo}<br>
-      <strong>Estado:</strong> ${o.estado}<br>
-      <button onclick="cancelar(${o.id})">Cancelar</button>
-    `;
-    listaOrdenes.appendChild(div);
-  });
-}
+  // Exponer funciones al HTML
+  window.cancelar = function(id) {
+    let data = JSON.parse(localStorage.getItem("ordenes")) || [];
+    data = data.filter(o => o.id !== id);
+    localStorage.setItem("ordenes", JSON.stringify(data));
+    mostrarOrdenes();
+  };
 
-function cancelar(id) {
-  let data = JSON.parse(localStorage.getItem("ordenes")) || [];
-  data = data.filter(o => o.id !== id);
-  localStorage.setItem("ordenes", JSON.stringify(data));
-  mostrarOrdenes();
-}
+  // ===== PANEL ADMIN – VER ÓRDENES =====
+  function cargarAdmin() {
+    const adminOrdenes = document.getElementById("adminOrdenes");
+    adminOrdenes.innerHTML = "";
+    const data = JSON.parse(localStorage.getItem("ordenes")) || [];
 
-/* ========= ADMIN ========= */
-function cargarAdmin() {
-  const adminOrdenes = document.getElementById("adminOrdenes");
-  adminOrdenes.innerHTML = "";
-  const data = JSON.parse(localStorage.getItem("ordenes")) || [];
+    if (data.length === 0) {
+      adminOrdenes.innerHTML = "<p>No hay órdenes registradas</p>";
+      return;
+    }
 
-  data.forEach(o => {
-    const div = document.createElement("div");
-    div.className = "orden admin";
-    div.innerHTML = `
-      <strong>Orden:</strong> ${o.id}<br>
-      <strong>Cliente:</strong> ${o.nombre}<br>
-      <strong>Servicio:</strong> ${o.tipo}<br>
-      <strong>Estado:</strong> ${o.estado}
-    `;
-    adminOrdenes.appendChild(div);
-  });
-}
+    data.forEach(o => {
+      const div = document.createElement("div");
+      div.className = "orden admin";
+      div.innerHTML = `
+        <strong>Orden:</strong> ${o.id}<br>
+        <strong>Cliente:</strong> ${o.nombre}<br>
+        <strong>Servicio:</strong> ${o.tipo}<br>
+        <strong>Estado:</strong> ${o.estado}
+      `;
+      adminOrdenes.appendChild(div);
+    });
+  }
 
-function ocultarTodo() {
-  home.classList.add("hidden");
-  formulario.classList.add("hidden");
-  ordenes.classList.add("hidden");
-  admin.classList.add("hidden");
-}
+});
 
-// =========================
-// ACTIVAR PANEL ADMIN
-// =========================
-document.getElementById("btnAdmin").onclick = () => {
-  ocultarTodo();
-  admin.classList.remove("hidden");
-};
+
 
 
 
