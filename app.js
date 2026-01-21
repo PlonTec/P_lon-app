@@ -26,3 +26,33 @@ document.addEventListener("DOMContentLoaded", () => {
 
 });
 
+// ===============================
+// PANEL ADMIN SEGURO (AISLADO)
+// ===============================
+
+const ADMIN_PIN = "1234";
+
+const btnAdmin = document.getElementById("btnAdmin");
+const adminSection = document.getElementById("admin");
+
+if (btnAdmin && adminSection) {
+  btnAdmin.addEventListener("click", () => {
+    const pin = window.prompt("Ingrese el PIN del técnico");
+
+    if (!pin) return;
+
+    if (pin !== ADMIN_PIN) {
+      alert("PIN incorrecto");
+      return;
+    }
+
+    // SOLO mostrar el panel admin, sin tocar lo demás
+    adminSection.classList.remove("hidden");
+
+    // Cargar info exclusiva del técnico
+    if (typeof cargarAdmin === "function") {
+      cargarAdmin();
+    }
+  });
+}
+
