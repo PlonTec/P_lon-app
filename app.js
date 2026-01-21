@@ -1,3 +1,4 @@
+const ADMIN_PIN = "1234";
 const home = document.getElementById("home");
 const formulario = document.getElementById("formulario");
 const ordenes = document.getElementById("ordenes");
@@ -17,10 +18,18 @@ document.getElementById("btnOrdenes").onclick = () => {
 };
 
 document.getElementById("btnAdmin").onclick = () => {
+  const pin = prompt("Ingrese el PIN del técnico");
+
+  if (pin !== ADMIN_PIN) {
+    alert("Acceso denegado");
+    return;
+  }
+
   ocultarTodo();
   admin.classList.remove("hidden");
   cargarAdmin();
 };
+
 
 function volver() {
   ocultarTodo();
@@ -139,6 +148,7 @@ document.getElementById("btnAdmin").onclick = () => {
   ocultarTodo();
   admin.classList.remove("hidden");
 };
+
 
 
 
