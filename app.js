@@ -1,49 +1,56 @@
-// ==========================
-// REFERENCIAS PRINCIPALES
-// ==========================
+alert("APP CARGADA CORRECTAMENTE");
+
+/* =========================
+   REFERENCIAS
+========================= */
 const home = document.getElementById("home");
 const formulario = document.getElementById("formulario");
 const ordenes = document.getElementById("ordenes");
 const admin = document.getElementById("admin");
 const listaOrdenes = document.getElementById("listaOrdenes");
 
-// ==========================
-// BOTONES PRINCIPALES
-// ==========================
-document.getElementById("btnServicio").addEventListener("click", () => {
+/* =========================
+   CONFIGURACIÓN
+========================= */
+const WHATSAPP_TECNICO = "573152309386"; // CAMBIA ESTE NÚMERO
+
+/* =========================
+   BOTONES PRINCIPALES
+========================= */
+document.getElementById("btnServicio").onclick = () => {
   ocultarTodo();
   formulario.classList.remove("hidden");
-});
+};
 
-document.getElementById("btnOrdenes").addEventListener("click", () => {
+document.getElementById("btnOrdenes").onclick = () => {
   ocultarTodo();
   ordenes.classList.remove("hidden");
   mostrarOrdenes();
-});
+};
 
-document.getElementById("btnAdmin").addEventListener("click", () => {
+document.getElementById("btnAdmin").onclick = () => {
   const pin = prompt("Ingrese el PIN del técnico");
-  if (pin !== "1234") {
+  if (pin === "M1234") {
+    ocultarTodo();
+    admin.classList.remove("hidden");
+    cargarAdmin();
+  } else {
     alert("PIN incorrecto");
-    return;
   }
-  ocultarTodo();
-  admin.classList.remove("hidden");
-  cargarAdmin();
-});
+};
 
-// ==========================
-// VOLVER
-// ==========================
+/* =========================
+   VOLVER
+========================= */
 function volver() {
   ocultarTodo();
   home.classList.remove("hidden");
 }
 
-// ==========================
-// GUARDAR ORDEN + WHATSAPP
-// ==========================
-document.getElementById("guardar").addEventListener("click", () => {
+/* =========================
+   CREAR ORDEN + WHATSAPP
+========================= */
+document.getElementById("guardar").onclick = () => {
   const nombre = document.getElementById("nombre").value;
   const telefono = document.getElementById("telefono").value;
   const direccion = document.getElementById("direccion").value;
@@ -51,7 +58,7 @@ document.getElementById("guardar").addEventListener("click", () => {
   const descripcion = document.getElementById("descripcion").value;
 
   if (!nombre || !telefono || !direccion || !tipo || !descripcion) {
-    alert("Por favor completa todos los campos");
+    alert("Completa todos los campos");
     return;
   }
 
@@ -69,34 +76,40 @@ document.getElementById("guardar").addEventListener("click", () => {
   data.push(orden);
   localStorage.setItem("ordenes", JSON.stringify(data));
 
-  // 📲 WHATSAPP AUTOMÁTICO
-  const numeroTecnico = "573152309386"; // ← REEMPLAZA POR TU NÚMERO
-  const mensaje = `
-🔧 Nueva orden de servicio - P-LON
-
-👤 Cliente: ${nombre}
-📞 Teléfono: ${telefono}
-📍 Dirección: ${direccion}
-🛠 Servicio: ${tipo}
-📝 Descripción: ${descripcion}
-  `;
-
-  const url = `https://wa.me/${numeroTecnico}?text=${encodeURIComponent(mensaje)}`;
-  window.open(url, "_blank");
+  enviarWhatsApp(orden);
 
   alert("Orden creada con éxito");
+  formulario.querySelectorAll("input, textarea").forEach(i => i.value = "");
+  document.getElementById("tipo").value = "";
   volver();
-});
+};
 
-// ==========================
-// MOSTRAR ÓRDENES CLIENTE
-// ==========================
+/* =========================
+   WHATSAPP AUTOMÁTICO
+========================= */
+function enviarWhatsApp(o) {
+  const mensaje =
+`🛠️ *Nueva orden de servicio - P-LON*
+
+👤 Cliente: ${o.nombre}
+📞 Teléfono: ${o.telefono}
+📍 Dirección: ${o.direccion}
+🔧 Servicio: ${o.tipo}
+📝 Descripción: ${o.descripcion}`;
+
+  const url = `https://wa.me/${WHATSAPP_TECNICO}?text=${encodeURIComponent(mensaje)}`;
+  window.open(url, "_blank");
+}
+
+/* =========================
+   MIS ÓRDENES
+========================= */
 function mostrarOrdenes() {
   listaOrdenes.innerHTML = "";
   const data = JSON.parse(localStorage.getItem("ordenes")) || [];
 
   if (data.length === 0) {
-    listaOrdenes.innerHTML = "<p>No hay órdenes registradas</p>";
+    listaOrdenes.innerHTML = "<p>No hay órdenes</p>";
     return;
   }
 
@@ -104,7 +117,6 @@ function mostrarOrdenes() {
     const div = document.createElement("div");
     div.className = "orden";
     div.innerHTML = `
-      <strong>Orden:</strong> ${o.id}<br>
       <strong>Servicio:</strong> ${o.tipo}<br>
       <strong>Estado:</strong> ${o.estado}<br>
       <button onclick="cancelar(${o.id})">Cancelar</button>
@@ -113,9 +125,9 @@ function mostrarOrdenes() {
   });
 }
 
-// ==========================
-// CANCELAR ORDEN
-// ==========================
+/* =========================
+   CANCELAR
+========================= */
 function cancelar(id) {
   let data = JSON.parse(localStorage.getItem("ordenes")) || [];
   data = data.filter(o => o.id !== id);
@@ -123,16 +135,16 @@ function cancelar(id) {
   mostrarOrdenes();
 }
 
-// ==========================
-// PANEL ADMIN (MEJORADO)
-// ==========================
+/* =========================
+   PANEL ADMIN (MEJORADO)
+========================= */
 function cargarAdmin() {
   const adminOrdenes = document.getElementById("adminOrdenes");
   adminOrdenes.innerHTML = "";
   const data = JSON.parse(localStorage.getItem("ordenes")) || [];
 
   if (data.length === 0) {
-    adminOrdenes.innerHTML = "<p>No hay órdenes pendientes</p>";
+    adminOrdenes.innerHTML = "<p>No hay órdenes</p>";
     return;
   }
 
@@ -154,28 +166,24 @@ function cargarAdmin() {
   });
 }
 
-function cambiarEstado(id, nuevoEstado) {
+function cambiarEstado(id, estado) {
   let data = JSON.parse(localStorage.getItem("ordenes")) || [];
   data = data.map(o => {
-    if (o.id === id) o.estado = nuevoEstado;
+    if (o.id === id) o.estado = estado;
     return o;
   });
   localStorage.setItem("ordenes", JSON.stringify(data));
   cargarAdmin();
 }
 
-// ==========================
-// UTILIDAD
-// ==========================
+/* =========================
+   UTILIDAD
+========================= */
 function ocultarTodo() {
   home.classList.add("hidden");
   formulario.classList.add("hidden");
   ordenes.classList.add("hidden");
   admin.classList.add("hidden");
 }
-
-
-
-
 
 
