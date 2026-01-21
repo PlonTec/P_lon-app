@@ -1,57 +1,49 @@
-alert("app.js cargado correctamente");
-// ===============================
-// REFERENCIAS
-// ===============================
+// ==========================
+// REFERENCIAS PRINCIPALES
+// ==========================
 const home = document.getElementById("home");
 const formulario = document.getElementById("formulario");
 const ordenes = document.getElementById("ordenes");
 const admin = document.getElementById("admin");
-
 const listaOrdenes = document.getElementById("listaOrdenes");
-const adminOrdenes = document.getElementById("adminOrdenes");
 
-const btnServicio = document.getElementById("btnServicio");
-const btnOrdenes = document.getElementById("btnOrdenes");
-const btnAdmin = document.getElementById("btnAdmin");
-const btnGuardar = document.getElementById("guardar");
-
-// ===============================
-// UTILIDAD
-// ===============================
-function ocultarTodo() {
-  home.classList.add("hidden");
-  formulario.classList.add("hidden");
-  ordenes.classList.add("hidden");
-  admin.classList.add("hidden");
-}
-
-// ===============================
+// ==========================
 // BOTONES PRINCIPALES
-// ===============================
-btnServicio.onclick = () => {
+// ==========================
+document.getElementById("btnServicio").addEventListener("click", () => {
   ocultarTodo();
   formulario.classList.remove("hidden");
-};
+});
 
-btnOrdenes.onclick = () => {
+document.getElementById("btnOrdenes").addEventListener("click", () => {
   ocultarTodo();
   ordenes.classList.remove("hidden");
   mostrarOrdenes();
-};
+});
 
-// ===============================
-// VOLVER (GLOBAL)
-// ===============================
+document.getElementById("btnAdmin").addEventListener("click", () => {
+  const pin = prompt("Ingrese el PIN del técnico");
+  if (pin !== "1234") {
+    alert("PIN incorrecto");
+    return;
+  }
+  ocultarTodo();
+  admin.classList.remove("hidden");
+  cargarAdmin();
+});
+
+// ==========================
+// VOLVER
+// ==========================
 function volver() {
   ocultarTodo();
   home.classList.remove("hidden");
 }
-window.volver = volver; // 🔴 CLAVE: expone la función al HTML
 
-// ===============================
-// GUARDAR ORDEN
-// ===============================
-btnGuardar.onclick = () => {
+// ==========================
+// GUARDAR ORDEN + WHATSAPP
+// ==========================
+document.getElementById("guardar").addEventListener("click", () => {
   const nombre = document.getElementById("nombre").value;
   const telefono = document.getElementById("telefono").value;
   const direccion = document.getElementById("direccion").value;
@@ -77,13 +69,28 @@ btnGuardar.onclick = () => {
   data.push(orden);
   localStorage.setItem("ordenes", JSON.stringify(data));
 
+  // 📲 WHATSAPP AUTOMÁTICO
+  const numeroTecnico = "573152309386"; // ← REEMPLAZA POR TU NÚMERO
+  const mensaje = `
+🔧 Nueva orden de servicio - P-LON
+
+👤 Cliente: ${nombre}
+📞 Teléfono: ${telefono}
+📍 Dirección: ${direccion}
+🛠 Servicio: ${tipo}
+📝 Descripción: ${descripcion}
+  `;
+
+  const url = `https://wa.me/${numeroTecnico}?text=${encodeURIComponent(mensaje)}`;
+  window.open(url, "_blank");
+
   alert("Orden creada con éxito");
   volver();
-};
+});
 
-// ===============================
+// ==========================
 // MOSTRAR ÓRDENES CLIENTE
-// ===============================
+// ==========================
 function mostrarOrdenes() {
   listaOrdenes.innerHTML = "";
   const data = JSON.parse(localStorage.getItem("ordenes")) || [];
@@ -105,48 +112,27 @@ function mostrarOrdenes() {
     listaOrdenes.appendChild(div);
   });
 }
-window.mostrarOrdenes = mostrarOrdenes;
 
-// ===============================
+// ==========================
 // CANCELAR ORDEN
-// ===============================
+// ==========================
 function cancelar(id) {
   let data = JSON.parse(localStorage.getItem("ordenes")) || [];
   data = data.filter(o => o.id !== id);
   localStorage.setItem("ordenes", JSON.stringify(data));
   mostrarOrdenes();
 }
-window.cancelar = cancelar;
 
-// ===============================
-// PANEL ADMIN (EXCLUSIVO)
-// ===============================
-const ADMIN_PIN = "1234";
-
-btnAdmin.onclick = () => {
-  const pin = window.prompt("Ingrese el PIN del técnico");
-
-  if (!pin) return;
-
-  if (pin !== ADMIN_PIN) {
-    alert("PIN incorrecto");
-    return;
-  }
-
-  ocultarTodo();
-  admin.classList.remove("hidden");
-  cargarAdmin();
-};
-
-// ===============================
-// CARGAR ADMIN
-// ===============================
+// ==========================
+// PANEL ADMIN (MEJORADO)
+// ==========================
 function cargarAdmin() {
+  const adminOrdenes = document.getElementById("adminOrdenes");
   adminOrdenes.innerHTML = "";
   const data = JSON.parse(localStorage.getItem("ordenes")) || [];
 
   if (data.length === 0) {
-    adminOrdenes.innerHTML = "<p>No hay órdenes registradas</p>";
+    adminOrdenes.innerHTML = "<p>No hay órdenes pendientes</p>";
     return;
   }
 
@@ -156,29 +142,40 @@ function cargarAdmin() {
     div.innerHTML = `
       <strong>Orden:</strong> ${o.id}<br>
       <strong>Cliente:</strong> ${o.nombre}<br>
+      <strong>Teléfono:</strong> ${o.telefono}<br>
+      <strong>Dirección:</strong> ${o.direccion}<br>
       <strong>Servicio:</strong> ${o.tipo}<br>
-      <strong>Estado:</strong> ${o.estado}<br>
+      <strong>Descripción:</strong> ${o.descripcion}<br>
+      <strong>Estado:</strong> ${o.estado}<br><br>
       <button onclick="cambiarEstado(${o.id}, 'Confirmada')">Confirmar</button>
       <button onclick="cambiarEstado(${o.id}, 'Finalizada')">Finalizar</button>
     `;
     adminOrdenes.appendChild(div);
   });
 }
-window.cargarAdmin = cargarAdmin;
 
-// ===============================
-// CAMBIAR ESTADO
-// ===============================
-function cambiarEstado(id, estado) {
+function cambiarEstado(id, nuevoEstado) {
   let data = JSON.parse(localStorage.getItem("ordenes")) || [];
   data = data.map(o => {
-    if (o.id === id) o.estado = estado;
+    if (o.id === id) o.estado = nuevoEstado;
     return o;
   });
   localStorage.setItem("ordenes", JSON.stringify(data));
   cargarAdmin();
 }
-window.cambiarEstado = cambiarEstado;
+
+// ==========================
+// UTILIDAD
+// ==========================
+function ocultarTodo() {
+  home.classList.add("hidden");
+  formulario.classList.add("hidden");
+  ordenes.classList.add("hidden");
+  admin.classList.add("hidden");
+}
+
+
+
 
 
 
