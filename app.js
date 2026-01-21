@@ -1,3 +1,4 @@
+alert("app.js cargado correctamente");
 // ===============================
 // REFERENCIAS
 // ===============================
@@ -178,5 +179,6 @@ function cambiarEstado(id, estado) {
   cargarAdmin();
 }
 window.cambiarEstado = cambiarEstado;
+
 
 
