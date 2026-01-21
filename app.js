@@ -132,6 +132,14 @@ function ocultarTodo() {
   admin.classList.add("hidden");
 }
 
+// =========================
+// ACTIVAR PANEL ADMIN
+// =========================
+document.getElementById("btnAdmin").onclick = () => {
+  ocultarTodo();
+  admin.classList.remove("hidden");
+};
+
 
 
 
