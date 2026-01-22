@@ -56,32 +56,31 @@
     <div id="adminOrdenes"></div>
     <button onclick="volver()">Volver</button>
   </section>
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
 
-// Your web app's Firebase configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyCZJ3W4I6qAwAalOaSzl54dMTXzjNxgvSo",
-  authDomain: "p-lon-app.firebaseapp.com",
-  databaseURL: "https://p-lon-app-default-rtdb.firebaseio.com",
-  projectId: "p-lon-app",
-  storageBucket: "p-lon-app.firebasestorage.app",
-  messagingSenderId: "305649870607",
-  appId: "1:305649870607:web:87106799734079f0dc807a"
-};
+  <!-- 🔥 FIREBASE SDKs (COMPAT – CORRECTO) -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
+  <!-- 🔥 FIREBASE CONFIG -->
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCZJ3W4I6qAwAalOaSzl54dMTXzjNxgvSo",
+      authDomain: "p-lon-app.firebaseapp.com",
+      projectId: "p-lon-app",
+      storageBucket: "p-lon-app.firebasestorage.app",
+      messagingSenderId: "305649870607",
+      appId: "1:305649870607:web:87106799734079f0dc807a"
+    };
+
+    // Inicializar Firebase (FORMA CORRECTA)
+    firebase.initializeApp(firebaseConfig);
+  </script>
+
+  <!-- APP JS -->
   <script src="app.js"></script>
-  <!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
 </body>
 </html>
-
 
 
 
