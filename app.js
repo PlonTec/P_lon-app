@@ -124,7 +124,13 @@ function mostrarOrdenes() {
 function cargarAdmin() {
   const adminOrdenes = document.getElementById("adminOrdenes");
 
-  db.collection("ordenes")
+  // 🔥 Cancelar listener anterior si existe
+  if (unsubscribeAdmin) {
+    unsubscribeAdmin();
+  }
+
+  unsubscribeAdmin = db
+    .collection("ordenes")
     .orderBy("fecha", "desc")
     .onSnapshot(snapshot => {
       adminOrdenes.innerHTML = "";
@@ -150,10 +156,12 @@ function cargarAdmin() {
           <button onclick="cambiarEstado('${doc.id}', 'Confirmada')">Confirmar</button>
           <button onclick="cambiarEstado('${doc.id}', 'Finalizada')">Finalizar</button>
         `;
+
         adminOrdenes.appendChild(div);
       });
     });
 }
+
 
 function cambiarEstado(id, estado) {
   db.collection("ordenes").doc(id).update({ estado });
@@ -168,4 +176,5 @@ function ocultarTodo() {
   ordenes.classList.add("hidden");
   admin.classList.add("hidden");
 }
+
 
