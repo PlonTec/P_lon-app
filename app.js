@@ -1,4 +1,4 @@
-alert("APP CARGADA CORRECTAMENTE");
+alert("GRACIAS POR USAR MI SERVICIO");
 
 /* =========================
    REFERENCIAS
@@ -176,5 +176,6 @@ function ocultarTodo() {
   ordenes.classList.add("hidden");
   admin.classList.add("hidden");
 }
+
 
 
