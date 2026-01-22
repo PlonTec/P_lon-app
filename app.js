@@ -10,9 +10,15 @@ const admin = document.getElementById("admin");
 const listaOrdenes = document.getElementById("listaOrdenes");
 
 /* =========================
+   FIREBASE
+========================= */
+const db = firebase.firestore();
+
+/* =========================
    CONFIGURACIÓN
 ========================= */
-const WHATSAPP_TECNICO = "573152309386"; // CAMBIA ESTE NÚMERO
+const WHATSAPP_TECNICO = "573152309386"; // TU NÚMERO
+const PIN_ADMIN = "M1234";
 
 /* =========================
    BOTONES PRINCIPALES
@@ -30,7 +36,7 @@ document.getElementById("btnOrdenes").onclick = () => {
 
 document.getElementById("btnAdmin").onclick = () => {
   const pin = prompt("Ingrese el PIN del técnico");
-  if (pin === "M1234") {
+  if (pin === PIN_ADMIN) {
     ocultarTodo();
     admin.classList.remove("hidden");
     cargarAdmin();
@@ -48,7 +54,7 @@ function volver() {
 }
 
 /* =========================
-   CREAR ORDEN + WHATSAPP
+   CREAR ORDEN + FIREBASE + WHATSAPP
 ========================= */
 document.getElementById("guardar").onclick = () => {
   const nombre = document.getElementById("nombre").value;
@@ -63,29 +69,33 @@ document.getElementById("guardar").onclick = () => {
   }
 
   const orden = {
-    id: Date.now(),
     nombre,
     telefono,
     direccion,
     tipo,
     descripcion,
-    estado: "Pendiente"
+    estado: "Pendiente",
+    fecha: new Date().toISOString()
   };
 
-  const data = JSON.parse(localStorage.getItem("ordenes")) || [];
-  data.push(orden);
-  localStorage.setItem("ordenes", JSON.stringify(data));
+  // 🔥 GUARDAR EN FIREBASE (GLOBAL)
+  db.collection("ordenes").add(orden)
+    .then(() => {
+      enviarWhatsApp(orden);
+      alert("Orden creada con éxito");
 
-  enviarWhatsApp(orden);
-
-  alert("Orden creada con éxito");
-  formulario.querySelectorAll("input, textarea").forEach(i => i.value = "");
-  document.getElementById("tipo").value = "";
-  volver();
+      formulario.querySelectorAll("input, textarea").forEach(i => i.value = "");
+      document.getElementById("tipo").value = "";
+      volver();
+    })
+    .catch(err => {
+      alert("Error al guardar la orden");
+      console.error(err);
+    });
 };
 
 /* =========================
-   WHATSAPP AUTOMÁTICO
+   WHATSAPP AUTOMÁTICO (SIN CAMBIOS)
 ========================= */
 function enviarWhatsApp(o) {
   const mensaje =
@@ -102,78 +112,51 @@ function enviarWhatsApp(o) {
 }
 
 /* =========================
-   MIS ÓRDENES
+   MIS ÓRDENES (LOCAL - OPCIONAL)
 ========================= */
 function mostrarOrdenes() {
-  listaOrdenes.innerHTML = "";
-  const data = JSON.parse(localStorage.getItem("ordenes")) || [];
-
-  if (data.length === 0) {
-    listaOrdenes.innerHTML = "<p>No hay órdenes</p>";
-    return;
-  }
-
-  data.forEach(o => {
-    const div = document.createElement("div");
-    div.className = "orden";
-    div.innerHTML = `
-      <strong>Servicio:</strong> ${o.tipo}<br>
-      <strong>Estado:</strong> ${o.estado}<br>
-      <button onclick="cancelar(${o.id})">Cancelar</button>
-    `;
-    listaOrdenes.appendChild(div);
-  });
+  listaOrdenes.innerHTML = "<p>Consulta el estado con el técnico.</p>";
 }
 
 /* =========================
-   CANCELAR
-========================= */
-function cancelar(id) {
-  let data = JSON.parse(localStorage.getItem("ordenes")) || [];
-  data = data.filter(o => o.id !== id);
-  localStorage.setItem("ordenes", JSON.stringify(data));
-  mostrarOrdenes();
-}
-
-/* =========================
-   PANEL ADMIN (MEJORADO)
+   PANEL ADMIN (🔥 FIREBASE GLOBAL)
 ========================= */
 function cargarAdmin() {
   const adminOrdenes = document.getElementById("adminOrdenes");
-  adminOrdenes.innerHTML = "";
-  const data = JSON.parse(localStorage.getItem("ordenes")) || [];
 
-  if (data.length === 0) {
-    adminOrdenes.innerHTML = "<p>No hay órdenes</p>";
-    return;
-  }
+  db.collection("ordenes")
+    .orderBy("fecha", "desc")
+    .onSnapshot(snapshot => {
+      adminOrdenes.innerHTML = "";
 
-  data.forEach(o => {
-    const div = document.createElement("div");
-    div.className = "orden admin";
-    div.innerHTML = `
-      <strong>Orden:</strong> ${o.id}<br>
-      <strong>Cliente:</strong> ${o.nombre}<br>
-      <strong>Teléfono:</strong> ${o.telefono}<br>
-      <strong>Dirección:</strong> ${o.direccion}<br>
-      <strong>Servicio:</strong> ${o.tipo}<br>
-      <strong>Descripción:</strong> ${o.descripcion}<br>
-      <strong>Estado:</strong> ${o.estado}<br><br>
-      <button onclick="cambiarEstado(${o.id}, 'Confirmada')">Confirmar</button>
-      <button onclick="cambiarEstado(${o.id}, 'Finalizada')">Finalizar</button>
-    `;
-    adminOrdenes.appendChild(div);
-  });
+      if (snapshot.empty) {
+        adminOrdenes.innerHTML = "<p>No hay órdenes</p>";
+        return;
+      }
+
+      snapshot.forEach(doc => {
+        const o = doc.data();
+
+        const div = document.createElement("div");
+        div.className = "orden admin";
+        div.innerHTML = `
+          <strong>Cliente:</strong> ${o.nombre}<br>
+          <strong>Teléfono:</strong> ${o.telefono}<br>
+          <strong>Dirección:</strong> ${o.direccion}<br>
+          <strong>Servicio:</strong> ${o.tipo}<br>
+          <strong>Descripción:</strong> ${o.descripcion}<br>
+          <strong>Estado:</strong> ${o.estado}<br><br>
+
+          <button onclick="cambiarEstado('${doc.id}', 'Confirmada')">Confirmar</button>
+          <button onclick="cambiarEstado('${doc.id}', 'Finalizada')">Finalizar</button>
+        `;
+        adminOrdenes.appendChild(div);
+      });
+    });
 }
 
 function cambiarEstado(id, estado) {
-  let data = JSON.parse(localStorage.getItem("ordenes")) || [];
-  data = data.map(o => {
-    if (o.id === id) o.estado = estado;
-    return o;
-  });
-  localStorage.setItem("ordenes", JSON.stringify(data));
-  cargarAdmin();
+  db.collection("ordenes").doc(id).update({ estado });
 }
 
 /* =========================
@@ -185,5 +168,4 @@ function ocultarTodo() {
   ordenes.classList.add("hidden");
   admin.classList.add("hidden");
 }
-
 
