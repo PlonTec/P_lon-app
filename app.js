@@ -17,7 +17,7 @@ const db = firebase.firestore();
 /* =========================
    CONFIGURACIÓN
 ========================= */
-const WHATSAPP_TECNICO = "573152309386"; // TU NÚMERO
+const WHATSAPP_TECNICO = "573187401962"; // TU NÚMERO
 const PIN_ADMIN = "M1234";
 
 /* =========================
@@ -174,6 +174,7 @@ function ocultarTodo() {
   ordenes.classList.add("hidden");
   admin.classList.add("hidden");
 }
+
 
 
 
